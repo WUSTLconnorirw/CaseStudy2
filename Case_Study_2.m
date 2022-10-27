@@ -13,10 +13,34 @@ initialCondition = [1;
                     0;
                     0];
 
-timeMatrix = [0.95,0.05,0,0;
-              0.05,0.85,0,0;
-              0,0.10,1,0;
-              0,0.01,0,1] * initialCondition;
+A = [0.95,0.05,0,0;
+     0.05,0.85,0,0;
+     0,0.10,1,0;
+     0,0.01,0,1];
+
+
+
+% function timeMatrix = model(t)
+%     for i = 1:t
+%         timeMatrix = A * A;
+%     end
+
+
+
+matrix = zeros(4,100);
+matrix(:,1)=A * transpose([1,0,0,0]);
+
+for i = 2:100
+    matrix(:,i)=A*matrix(:,i-1);
+end
+
+figure(1)
+plot(1:100, matrix(1,:));
+hold on;
+plot(1:100, matrix(2,:));
+plot(1:100, matrix(3,:));
+plot(1:100, matrix(4,:));
+legend('Susceptible', 'Infected', 'Recovered', 'Dead')
 
 % The model assumes the following happens over each day.
 % • 5% of the susceptible population will acquire the disease. (The other 95%
