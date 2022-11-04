@@ -1,0 +1,314 @@
+load("COVIDdata.mat");
+
+%plot 1%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%day 10 to day 110%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 10:110;
+td_fit = 4:104;
+t = length(td);
+coviddata = table2array([COVID_STLmetro(td,"cases") COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+A = [];
+b = [];
+Af = [0 0 0 1 1 1 1];
+bf = 1;
+ub = [0.1 0.05 0.5 0.999999, 0.001, 0, 0]';
+lb = [0 0 0 0.9 0, 0, 0]';
+x0 = [0.05, 0.01, 0.01, 0.999, 0.001,0,0]; 
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+Y_fit = siroutput_full(x,t);
+
+figure();
+hold on;
+l1 = plot(td_fit,(ones([t,1])'-Y_fit(1:t,1)));
+l2 = plot(td,Y_fit(1:t,4));
+l3 = plot(coviddata(:,1),'r');
+l4 = plot(coviddata(:,2));
+legend([l1(1),l2,l3,l4],"Simulated Infected", "Simulated Deaths", "Actual Infected", "Actual Death")
+ylabel("Fraction Population");
+xlabel("Days");
+title("Actual Data and Fit(Days 10-110)","FontSize",14)
+ylim([0 0.006]);
+grid on
+hold off;
+
+%plot 2%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%day 121 to 240%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 121:240;
+td_fit = 121:240;
+t = length(td);
+coviddata = table2array([COVID_STLmetro(td,"cases")...
+    COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+ub = [0.08 0.05 0.5 0.995, 0.1, 0, 0]';
+lb = [0 0 0 0.994 0, 0, 0]';
+x0 = [0.03, 0.01, 0.01, 0.97, 0.001,0,0]; 
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+Y_fit = siroutput_full(x,t);
+
+figure();
+hold on;
+l1 = plot(td_fit,(ones([t,1])'-Y_fit(1:t,1)));
+l2 = plot(td,Y_fit(1:t,4));
+l3 = plot(td,coviddata(:,1),'r');
+l4 = plot(td,coviddata(:,2));
+legend([l1(1),l2,l3,l4],"Simulated Infected",...
+    "Simulated Deaths", "Actual Infected", "Actual Death")
+ylabel("Fraction Population");
+xlabel("Days");
+title("Actual Data and Fit(Days 121-240)","FontSize",14)
+ylim([0 0.2]);
+grid on
+hold off;
+
+%plot 3(120 to 320)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%day 121 to 240%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 121:240;
+t = length(td);
+
+coviddata = table2array([COVID_STLmetro(td,"cases") COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+ub = [0.08 0.05 0.5 0.995, 0.1, 0, 0]';
+lb = [0 0 0 0.994 0, 0, 0]';
+x0 = [0.03, 0.01, 0.01, 0.994, 0.001,0,0]; 
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+Y_fit1 = siroutput_full(x,t);
+
+%day 241 to 320%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 241:320;
+t = length(td);
+
+coviddata = table2array([COVID_STLmetro(td,"cases") COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+ub = [0.08 0.05 0.5 0.97, 0.1, 0, 0]';
+lb = [0 0 0 0.97 0, 0, 0]';
+x0 = [0.03, 0.01, 0.01, 0.97, 0.001,0,0];
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+Y_fit2 = siroutput_full(x,t);
+
+
+%combine 121 to 240 and 241 to 320%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Y_fit = cat(1,Y_fit1,Y_fit2);
+
+td = 121:320;
+td_fit = 121:320;
+t = length(td);
+coviddata = table2array([COVID_STLmetro(td,"cases") COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+figure();
+hold on;
+l1 = plot(td_fit,(ones([t,1])'-Y_fit(1:t,1)));
+l2 = plot(td,Y_fit(1:t,4));
+l3 = plot(td,coviddata(:,1),'r');
+l4 = plot(td,coviddata(:,2));
+legend([l1(1),l2,l3,l4],"Simulated Infected", "Simulated Deaths", "Actual Infected", "Actual Death")
+ylabel("Fraction Population");
+xlabel("Days");
+title("Actual Data and Fit(Days 121-320)","FontSize",14)
+ylim([0 0.2]);
+grid on
+hold off;
+
+
+
+%plot 4(1 to 700)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%day 1 to 130%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 1:130;
+t = length(td);
+
+coviddata = table2array([COVID_STLmetro(td,"cases") COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+ub = [0.08 0.05 0.5 0.99999999, 0.1, 0, 0]';
+lb = [0 0 0 0.99999999 0, 0, 0]';
+x0 = [0.03, 0.01, 0.01, 0.99999999, 0.001,0,0]; 
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+Y_fit1 = siroutput_full(x,t);
+
+%day 131 to 230%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 131:230;
+t = length(td);
+
+coviddata = table2array([COVID_STLmetro(td,"cases") COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+ub = [0.08 0.05 0.5 0.994, 0.1, 0, 0]';
+lb = [0 0 0 0.992 0, 0, 0]';
+x0 = [0.03, 0.01, 0.01, 0.993, 0.001,0,0];
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+Y_fit2 = siroutput_full(x,t);
+
+%day 231 to 330%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 231:330;
+t = length(td);
+
+coviddata = table2array([COVID_STLmetro(td,"cases") COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+ub = [0.08 0.05 0.5 0.9721, 0.1, 0, 0]';
+lb = [0 0 0 0.9721 0, 0, 0]';
+x0 = [0, 0.01, 0.01, 0.9721, 0.001,0,0];
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+Y_fit3 = siroutput_full(x,t);
+
+%day 331 to 500%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 331:500;
+t = length(td);
+
+coviddata = table2array([COVID_STLmetro(td,"cases") COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+ub = [0.08 0.05 0.5 0.9114, 0.1, 0, 0]';
+lb = [0 0 0 0.9114 0, 0, 0]';
+x0 = [0, 0.01, 0.01, 0.9114, 0.001,0,0];
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+disp(x(1))
+Y_fit4 = siroutput_full(x,t);
+
+%day 501 to 663%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 501:663;
+t = length(td);
+
+coviddata = table2array([COVID_STLmetro(td,"cases") COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+ub = [0.08 0.05 0.5 0.8893, 0.1, 0, 0]';
+lb = [0 0 0 0.8893 0, 0, 0]';
+x0 = [0.03, 0.01, 0.01, 0.8893, 0.001,0,0];
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+Y_fit5 = siroutput_full(x,t);
+
+%day 664 to 700%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 664:700;
+t = length(td);
+
+coviddata = table2array([COVID_STLmetro(td,"cases") COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+ub = [0.0027 0.05 0.5 0.8337, 0.1, 0, 0]';
+lb = [0.0025 0 0 0.8337 0, 0, 0]';
+x0 = [0.0027, 0.01, 0.01, 0.8337, 0.001,0,0];
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+Y_fit6 = siroutput_full(x,t);
+
+%combine all y fits %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Y_fit = cat(1,Y_fit1,Y_fit2,Y_fit3,Y_fit4,Y_fit5,Y_fit6);
+
+td = 1:700;
+td_fit = 1:700;
+t = length(td);
+coviddata = table2array([COVID_STLmetro(td,"cases") COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+figure();
+hold on;
+l1 = plot(td_fit,(ones([t,1])'-Y_fit(1:t,1)));
+l2 = plot(td,Y_fit(1:t,4));
+l3 = plot(td,coviddata(:,1),'r');
+l4 = plot(td,coviddata(:,2));
+legend([l1(1),l2,l3,l4],"Simulated Infected", "Simulated Deaths",...
+    "Actual Infected", "Actual Death","Location",'northwest')
+ylabel("Fraction Population");
+xlabel("Days");
+ylim([0 0.25]);
+title("Actual Data and Fit(Days 1-700)","FontSize",14)
+grid on
+hold off;
+
+
+%Policy model%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%days 421 to 500 fit before policy%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 421:500;
+t = length(td);
+coviddata = table2array([COVID_STLmetro(td,"cases")...
+    COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+ub = [0.08 0.05 0.5 0.8960, 0.1, 0, 0]';
+lb = [0 0 0 0.8960, 0, 0, 0]';
+x0 = [0.03, 0.01, 0.01, 0.902, 0.001,0,0]; 
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+disp(x(1))
+Y_fit1 = siroutput_full(x,t);
+
+%days 501 to 605 fit before policy%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+td = 501:605;
+t = length(td);
+coviddata = table2array([COVID_STLmetro(td,"cases")...
+    COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+sirafun= @(x)siroutput(x,t,coviddata);
+
+ub = [0.08 0.05 0.5 0.8893, 0.1, 0, 0]';
+lb = [0 0 0 0.8893, 0, 0, 0]';
+x0 = [0.03, 0.01, 0.01, 0.8893, 0.001,0,0]; 
+
+x = fmincon(sirafun,x0,A,b,Af,bf,lb,ub);
+disp(x(1))
+Y_fit2 = siroutput_full(x,t);
+
+%Combine the two intervals%%%%%%%%%%%%%%%%%%%%%%%%%%
+Y_fit = cat(1,Y_fit1,Y_fit2);
+
+td = 421:605;
+td_fit = 421:605;
+t = length(td);
+coviddata = table2array([COVID_STLmetro(td,"cases")...
+    COVID_STLmetro(td,"deaths")]);
+coviddata = coviddata/(STLmetroPop*10^5);
+
+figure();
+hold on;
+l1 = plot(td_fit,(ones([t,1])'-Y_fit(1:t,1)));
+l2 = plot(td,Y_fit(1:t,4));
+l3 = plot(td,coviddata(:,1),'r');
+l4 = plot(td,coviddata(:,2));
+legend([l1(1),l2,l3,l4],"Simulated Infected Before policy",...
+    "Simulated Deaths Before Policy","Simulated Infected After policy",...
+    "Simulated Deaths After Policy" "Actual Infected",...
+    "Actual Death","Location",'northwest')
+ylabel("Fraction Population");
+xlabel("Days");
+title("Infection Before and After Policy(Days 421-605)","FontSize",14)
+ylim([0.08 0.15]);
+grid on
+hold off;
+
